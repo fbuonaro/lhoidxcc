@@ -1,0 +1,3 @@
+embed-server --std-out=echo --server-config=standalone-ha.xml
+/subsystem=keycloak-server/:write-attribute(name=web-context,value={{ cookiecutter.keycloak_root_uri }})
+stop-embedded-server

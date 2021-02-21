@@ -1,0 +1,63 @@
+version: '3.7'
+
+services:
+    mariadb:
+        environment:
+            - MYSQL_ROOT_PASSWORD_FILE=/mariadb/secrets/mysql_root_password.txt
+        image: mariadb:10.5.7
+        networks:
+            - backend
+        volumes:
+            - ${PWD}/mariadb/etc/mysql/conf.d:/etc/mysql/conf.d:ro
+            - ${PWD}/mariadb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
+            - ${PWD}/mariadb/mariadb:/mariadb:ro
+            - ${PWD}/mariadb/var/lib/mysql:/var/lib/mysql
+    {{ cookiecutter.keycloak_container_name }}:
+        build:
+            context: ${PWD}/keycloak/Dockerfiles
+            dockerfile: ${PWD}/keycloak/Dockerfiles/Dockerfile
+        depends_on:
+            - "mariadb"
+        environment:
+            - DB_ADDR=mariadb
+            - DB_DATABASE={{ cookiecutter.keycloak_db }}
+            - DB_PASSWORD_FILE=/keycloak/secrets/db_password.txt
+            - DB_USER_FILE=/keycloak/secrets/db_user.txt
+            - DB_VENDOR=mariadb
+            - KEYCLOAK_USER_FILE=/keycloak/secrets/admin_user.txt
+            - KEYCLOAK_PASSWORD_FILE=/keycloak/secrets/admin_password.txt
+            - PROXY_ADDRESS_FORWARDING=true
+        networks:
+            - backend
+            - frontend
+        volumes:
+            - ${PWD}/certs:/etc/x509/https:ro
+            - ${PWD}/keycloak/keycloak:/keycloak:ro
+            - ${PWD}/keycloak/keycloak/startup-scripts/set_web_context.cli:/opt/jboss/startup-scripts/set_web_context.cli:ro
+            # - ${PWD}/keycloak/keycloak/startup-scripts/disable_theme_cache.cli:/opt/jboss/startup-scripts/disable_theme_cache.cli:ro
+            # - ${PWD}/keycloak/keycloak/themes/mytheme:/opt/jboss/keycloak/themes/mytheme:ro
+    www.{{ cookiecutter.domain }}.{{ cookiecutter.tld }}:
+        build:
+            context: ${PWD}/openresty/Dockerfiles
+            dockerfile: ${PWD}/openresty/Dockerfiles/Dockerfile
+        depends_on:
+            - keycloak
+        networks:
+            frontend:
+                aliases:
+                    - "{{ cookiecutter.domain }}.{{ cookiecutter.tld }}"
+        ports:
+            - "8443:443"
+            - "8080:8080"
+            - "443:443"
+            - "80:80"
+        volumes:
+            - ${PWD}/certs:/etc/x509/https:ro
+            - ${PWD}/openresty/openresty:/openresty:ro
+            - ${PWD}/openresty/var/www:/var/www:ro
+            - ${PWD}/openresty/etc/nginx:/usr/local/openresty/nginx/conf:ro
+networks:
+    backend:
+        driver: bridge
+    frontend:
+        driver: bridge
