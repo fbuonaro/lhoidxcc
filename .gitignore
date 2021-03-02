@@ -127,3 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+!/{{ cookiecutter.toplevel }}/**/var/
+!/{{ cookiecutter.toplevel }}/**/var/lib
