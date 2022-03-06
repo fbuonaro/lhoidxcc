@@ -4,7 +4,7 @@ services:
     mariadb:
         environment:
             - MYSQL_ROOT_PASSWORD_FILE=/mariadb/secrets/mysql_root_password.txt
-        image: mariadb:10.5.7
+        image: mariadb:10.6.4
         networks:
             - backend
         volumes:
@@ -17,7 +17,7 @@ services:
             context: ${PWD}/keycloak/Dockerfiles
             dockerfile: ${PWD}/keycloak/Dockerfiles/Dockerfile
         depends_on:
-            - "mariadb"
+            - mariadb
         environment:
             - DB_ADDR=mariadb
             - DB_DATABASE={{ cookiecutter.keycloak_db }}
@@ -27,6 +27,7 @@ services:
             - KEYCLOAK_USER_FILE=/keycloak/secrets/admin_user.txt
             - KEYCLOAK_PASSWORD_FILE=/keycloak/secrets/admin_password.txt
             - PROXY_ADDRESS_FORWARDING=true
+            # - KEYCLOAK_LOGLEVEL=TRACE
         networks:
             - backend
             - frontend
