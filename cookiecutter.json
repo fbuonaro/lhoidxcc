@@ -10,7 +10,7 @@
     "keycloak_db_user": "user",
     "keycloak_opts_realm": "{{ cookiecutter.domain }}",
     "keycloak_opts_client_id": "{{ cookiecutter.domain }}rp",
-    "keycloak_opts_client_secret": "{{ cookiecutter.domain }}secret",
+    "keycloak_opts_client_secret": "TODO",
     "keycloak_opts_redirect_uri": "authz_redirect",
     "keycloak_opts_xscopes": "",
     "keycloak_root_uri": "auth",
