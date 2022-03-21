@@ -11,7 +11,8 @@ services:
             - ${PWD}/mariadb/etc/mysql/conf.d:/etc/mysql/conf.d:ro
             - ${PWD}/mariadb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
             - ${PWD}/mariadb/mariadb:/mariadb:ro
-            - ${PWD}/mariadb/var/lib/mysql:/var/lib/mysql
+            # - ${PWD}/mariadb/var/lib/mysql:/var/lib/mysql
+            # - ${PWD}/mariadb/var/log/mysql:/var/log/mysql
     {{ cookiecutter.keycloak_container_name }}:
         build:
             context: ${PWD}/keycloak/Dockerfiles

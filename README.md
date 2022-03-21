@@ -10,10 +10,11 @@ After Instantiation
 -------------------
 * Run /bootstrap_scripts/gen_ssl*.py if needed else copy existing files to /certs
 * docker-compose up
-* Go to local keycloak and
+* Go to local keycloak (https://<domain>.<tld>/auth) and
+  * login with admin credentials
   * create realm
   * create extra scopes if specified in opts
-  * add client as confidential, add valid redirect uris, and generate client secret
+  * add clients, add valid redirect uris, and generate client secret
   * update /openresty/opts/keycloak_opts.json with client+secret
   * reload openresty with "openresty -s reload" or restart container
 * Update /openresty/etc/nginx/conf.d/domain.conf with additional locations
